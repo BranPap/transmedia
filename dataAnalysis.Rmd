@@ -1,0 +1,84 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+##Transgender
+
+```{r}
+TransgenderNGram <- read.csv("TransgenderOutput.csv")
+```
+
+```{r}
+summary(TransgenderNGram)
+```
+
+```{r}
+TransgenderNGram$n.gram <- as.factor(TransgenderNGram$n.gram)
+```
+
+
+
+```{r}
+TransgenderNGram %>% 
+  filter(count >= 50) %>% 
+  ggplot(aes(x=reorder(n.gram,count), y=count)) + 
+  geom_bar(stat = "identity") + 
+  coord_flip() + 
+  theme_minimal() + 
+  labs(x="Collocation", y="# of occurrences", title="\"Transgender + [collocate]\" Counts in Breitbart Articles")
+```
+
+##Assigned
+
+```{r}
+AssignedNGram <- read.csv("AssignedDictOutput.csv")
+```
+
+```{r}
+summary(AssignedNGram)
+```
+
+```{r}
+AssignedNGram$n.gram <- as.factor(AssignedNGram$n.gram)
+```
+
+
+
+```{r}
+AssignedNGram %>% 
+  ggplot(aes(x=reorder(n.gram,count), y=count)) + 
+  geom_bar(stat = "identity") + 
+  coord_flip() + 
+  theme_minimal() + 
+  labs(x="Collocation", y="# of occurrences", title="\"Assigned + [collocate] + at birth\" Counts in Breitbart Articles")
+
+```
+##Biological
+
+```{r}
+BiologicalNGram <- read.csv("BiologicalDictOutput.csv")
+```
+
+```{r}
+summary(BiologicalNGram)
+```
+
+```{r}
+BiologicalNGram$n.gram <- as.factor(BiologicalNGram$n.gram)
+```
+
+
+```{r}
+BiologicalNGram %>% 
+  filter(count >= 50) %>% 
+  ggplot(aes(x=reorder(n.gram,count), y=count)) + 
+  geom_bar(stat = "identity") + 
+  coord_flip() + 
+  theme_minimal() + 
+  labs(x="Collocation", y="# of occurrences", title="\"Biological + [collocate]\" Counts in Breitbart Articles")
+```
