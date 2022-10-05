@@ -10,7 +10,7 @@ library(dplyr)
 ##Transgender
 
 ```{r}
-TransgenderNGram <- read.csv("TransgenderOutput.csv")
+TransgenderNGram <- read.csv("transgenderBigramPMI.csv")
 ```
 
 ```{r}
@@ -18,20 +18,83 @@ summary(TransgenderNGram)
 ```
 
 ```{r}
+craze <- list("transgender craze", "transgender ideology", "transgender activists", "transgender movement", "transgender lobby", "transgender advocates", "transgender trend")
+
+athletics <- list("transgender cyclist", "transgender weightlifter", "transgender athletes", "transgender swimmer")
+```
+
+```{r}
 TransgenderNGram$n.gram <- as.factor(TransgenderNGram$n.gram)
+
+TransgenderNGram <- TransgenderNGram %>%
+  mutate(theme = case_when(
+    n.gram %in% craze ~ "ideology",
+    n.gram %in% athletics ~ "athletics",
+    TRUE ~ "other"
+  ))
 ```
 
 
 
 ```{r}
-TransgenderNGram %>% 
-  filter(count >= 50) %>% 
-  ggplot(aes(x=reorder(n.gram,count), y=count)) + 
-  geom_bar(stat = "identity") + 
-  coord_flip() + 
-  theme_minimal() + 
-  labs(x="Collocation", y="# of occurrences", title="\"Transgender + [collocate]\" Counts in Breitbart Articles")
+TransgenderNGram %>%
+  filter(PMI >= 5) %>%
+  ggplot(aes(x = reorder(n.gram,PMI), y=PMI, fill=theme)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme_minimal() +
+  labs(x="Collocation", y="PMI", title="\"Transgender + [collocate]\" PMI in Breitbart Articles") +
+  scale_fill_brewer(palette = "Accent")
 ```
+
+```{r}
+ggsave("figures/TransCollocationPMI.png")
+```
+
+## Biological 
+
+```{r}
+BiologicalNGram <- read.csv("biologicalBigramPMI.csv")
+BiologicalNGram$n.gram <- as.factor(BiologicalNGram$n.gram)
+```
+
+```{r}
+male <- list("biological males", "biological male", "biological men", "biological boys")
+
+female <- list("biological females")
+
+biology <- list("biological differences", "biological sex", "biological reality", "biological sexes")
+```
+
+```{r}
+BiologicalNGram$n.gram <- as.factor(TransgenderNGram$n.gram)
+
+BiologicalNGram <- BiologicalNGram %>%
+  mutate(theme = case_when(
+    n.gram %in% male ~ "AMAB",
+    n.gram %in% female ~ "AFAB",
+    n.gram %in% biology ~ "biology",
+    TRUE ~ "other"
+  ))
+```
+
+```{r}
+BiologicalNGram %>%
+  filter(PMI >= 5) %>%
+  ggplot(aes(x = reorder(n.gram,PMI), y=PMI, fill=theme)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme_minimal() +
+  labs(x="Collocation", y="PMI", title="\"Biological + [collocate]\" PMI in Breitbart Articles") +
+  scale_fill_brewer(palette = "Paired") + 
+  theme(text = element_text(size = 14))
+```
+
+```{r}
+ggsave("figures/BioCollocationPMI.png")
+```
+
+
 
 ##Assigned
 
