@@ -59,6 +59,41 @@ with open("transgenderOutput.csv","w", newline="") as DictCsv:
         w.writerow([key, value])
 
 
+
+### Gender Dict
+
+genderDict = {}
+
+for line in filesText:
+    tokens = word_tokenize(line)
+    tokens = list(filter(lambda token: token not in string.punctuation, tokens))
+    tokens = list(filter(lambda token: token not in ignoreList, tokens))
+    tokens = [i.strip(".") for i in tokens]
+    bigram = list(ngrams(tokens, 2))
+    bigramList.append(bigram)
+
+
+# print(bigramList)
+
+for pairList in bigramList:
+    for pair in pairList:
+        bigram = pair[0] + " " + pair[1]
+        if pair[0] == "gender":
+            if bigram not in genderDict.keys():
+                genderDict[bigram] = 1
+            if bigram in genderDict.keys():
+                genderDict[bigram] = genderDict[bigram] + 1
+
+# print(transDict)
+
+headers = ["n-gram","count"]
+
+with open("genderOutput.csv","w", newline="") as DictCsv:
+    w = csv.writer(DictCsv)
+    w.writerow(headers)
+    for key, value in genderDict.items():
+        w.writerow([key, value])
+
 ### Identifies as 5-gram
 
 # identifyAsDict = {}
