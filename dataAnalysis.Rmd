@@ -6,6 +6,7 @@ output: html_notebook
 ```{r}
 library(ggplot2)
 library(dplyr)
+library(lubridate)
 
 theme_set(theme_bw())
 ```
@@ -13,26 +14,29 @@ theme_set(theme_bw())
 ##Transgender
 
 ```{r}
-TransgenderNGram <- read.csv("transgenderBigramPMI.csv")
+BreitbartTransgenderNGram <- read.csv("transgenderBigramPMI.csv")
 ```
 
 ```{r}
-summary(TransgenderNGram)
+summary(BreitbartTransgenderNGram)
 ```
 
 ```{r}
 craze <- list("transgender craze", "transgender ideology", "transgender activists", "transgender movement", "transgender lobby", "transgender advocates", "transgender trend")
 
-athletics <- list("transgender cyclist", "transgender weightlifter", "transgender athletes", "transgender swimmer")
+athletics <- list("transgender cyclist", "transgender weightlifter", "transgender athletes", "transgender swimmer","transgender lifestyle", "transgender footballer")
+
+militaryIndustrial <- list("transgender troop", 'transgender troops','transgender inmate','transgender prisoners', 'transgender inmates','transgender servicepeople', 'transgender soldier','transgender prisoner', 'transgender soldiers')
 ```
 
 ```{r}
-TransgenderNGram$n.gram <- as.factor(TransgenderNGram$n.gram)
+BreitbartTransgenderNGram$n.gram <- as.factor(BreitbartTransgenderNGram$n.gram)
 
-TransgenderNGram <- TransgenderNGram %>%
+BreitbartTransgenderNGram <- BreitbartTransgenderNGram %>%
   mutate(theme = case_when(
     n.gram %in% craze ~ "ideology",
     n.gram %in% athletics ~ "athletics",
+    n.gram %in% militaryIndustrial ~ "military industrial prison complex",
     TRUE ~ "other"
   ))
 ```
@@ -40,7 +44,7 @@ TransgenderNGram <- TransgenderNGram %>%
 
 
 ```{r}
-TransgenderNGram %>%
+BreitbartTransgenderNGram %>%
   filter(PMI >= 5) %>%
   ggplot(aes(x = reorder(n.gram,PMI), y=PMI, fill=theme, label=PMI)) +
   geom_bar(stat = "identity") +
@@ -52,14 +56,54 @@ TransgenderNGram %>%
 ```
 
 ```{r}
-ggsave("figures/TransCollocationPMI.png")
+ggsave("figures/BreitbartTransCollocationPMI.png")
+```
+
+### Pink News
+
+
+```{r}
+PinkNewsTransgenderNGram <- read.csv("PNtransgenderBigramPMI.csv")
+```
+
+```{r}
+summary(PinkNewsTransgenderNGram)
+```
+
+
+```{r}
+PinkNewsTransgenderNGram$n.gram <- as.factor(PinkNewsTransgenderNGram$n.gram)
+
+PinkNewsTransgenderNGram <- PinkNewsTransgenderNGram %>%
+  mutate(theme = case_when(
+    n.gram %in% craze ~ "ideology",
+    n.gram %in% athletics ~ "athletics",
+    n.gram %in% militaryIndustrial ~ "military industrail prison complex",
+    TRUE ~ "other"
+  ))
+```
+
+
+
+```{r}
+PinkNewsTransgenderNGram %>%
+  filter(PMI >= 5) %>%
+  ggplot(aes(x = reorder(n.gram,PMI), y=PMI, fill=theme, label=PMI)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(x=reorder(n.gram,PMI), y=PMI, hjust = -.2, label=trunc(PMI*10^2)/10^2)) + 
+  coord_flip() +
+  labs(x="Collocation", y="PMI", title="\"Transgender\" Collocations PMI in Pink News Articles",fill="Theme") +
+  scale_fill_brewer(palette = "Accent") + 
+  ylim(0,7.5)
 ```
 
 ## Biological 
 
+### Breitbart
+
 ```{r}
-BiologicalNGram <- read.csv("biologicalBigramPMI.csv")
-BiologicalNGram$n.gram <- as.factor(BiologicalNGram$n.gram)
+BreitbartBiologicalNGram <- read.csv("biologicalBigramPMI.csv")
+BreitbartBiologicalNGram$n.gram <- as.factor(BreitbartBiologicalNGram$n.gram)
 ```
 
 ```{r}
@@ -71,9 +115,9 @@ biology <- list("biological differences", "biological sex", "biological reality"
 ```
 
 ```{r}
-BiologicalNGram$n.gram <- as.factor(BiologicalNGram$n.gram)
+BreitbartBiologicalNGram$n.gram <- as.factor(BreitbartBiologicalNGram$n.gram)
 
-BiologicalNGram <- BiologicalNGram %>%
+BreitbartBiologicalNGram <- BreitbartBiologicalNGram %>%
   mutate(theme = case_when(
     n.gram %in% male ~ "AMAB",
     n.gram %in% female ~ "AFAB",
@@ -83,69 +127,172 @@ BiologicalNGram <- BiologicalNGram %>%
 ```
 
 ```{r}
-BiologicalNGram %>%
+BreitbartBiologicalNGram %>%
   filter(PMI >= 5) %>%
-  ggplot(aes(x = reorder(n.gram,PMI), y=PMI, fill=theme)) +
+  ggplot(aes(x = reorder(n.gram,PMI), y=PMI, fill=theme, label=PMI)) +
   geom_bar(stat = "identity") +
+  geom_text(aes(x=reorder(n.gram,PMI), y=PMI, hjust = -.2, label=trunc(PMI*10^2)/10^2)) + 
   coord_flip() +
   labs(x="Collocation", y="PMI", title="\"Biological\" Collocations PMI in Breitbart Articles",fill="Theme") +
   scale_fill_brewer(palette = "Paired") + 
-  theme(text = element_text(size = 14))
+  theme(text = element_text(size = 14)) + 
+  ylim(0,9)
 ```
 
 ```{r}
 ggsave("figures/BioCollocationPMI.png")
 ```
 
-
-
-##Assigned
+### Pink News
 
 ```{r}
-AssignedNGram <- read.csv("AssignedDictOutput.csv")
-```
-
-```{r}
-summary(AssignedNGram)
-```
-
-```{r}
-AssignedNGram$n.gram <- as.factor(AssignedNGram$n.gram)
+PNBiologicalNGram <- read.csv("PNbiologicalBigramPMI.csv")
+PNBiologicalNGram$n.gram <- as.factor(PNBiologicalNGram$n.gram)
 ```
 
 
+```{r}
+PNBiologicalNGram <- PNBiologicalNGram %>%
+  mutate(theme = case_when(
+    n.gram %in% male ~ "AMAB",
+    n.gram %in% female ~ "AFAB",
+    n.gram %in% biology ~ "biology",
+    TRUE ~ "other"
+  ))
+```
 
 ```{r}
-AssignedNGram %>% 
-  ggplot(aes(x=reorder(n.gram,count), y=count)) + 
-  geom_bar(stat = "identity") + 
-  coord_flip() + 
-  labs(x="Collocation", y="# of occurrences", title="\"Assigned + [collocate] + at birth\" Counts in Breitbart Articles")
-
+PNBiologicalNGram %>%
+  filter(PMI >= 2) %>%
+  ggplot(aes(x = reorder(n.gram,PMI), y=PMI, fill=theme, label=PMI)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(x=reorder(n.gram,PMI), y=PMI, hjust = -.2, label=trunc(PMI*10^2)/10^2)) + 
+  coord_flip() +
+  labs(x="Collocation", y="PMI", title="\"Biological\" Collocations PMI in Pink News Articles",fill="Theme") +
+  scale_fill_brewer(palette = "Paired") + 
+  theme(text = element_text(size = 14)) + 
+  ylim(0,9)
 ```
+
 ##Biological
 
 ```{r}
-BiologicalNGram <- read.csv("BiologicalDictOutput.csv")
+BreitbartBiologicalNGram <- read.csv("BiologicalBigramRaw.csv")
 ```
 
 ```{r}
-summary(BiologicalNGram)
+summary(BreitbartBiologicalNGram)
 ```
 
 ```{r}
-BiologicalNGram$n.gram <- as.factor(BiologicalNGram$n.gram)
+BreitbartBiologicalNGram$n.gram <- as.factor(BreitbartBiologicalNGram$n.gram)
 ```
 
 
 ```{r}
-BiologicalNGram %>% 
-  filter(count >= 50) %>% 
-  ggplot(aes(x=reorder(n.gram,count), y=count)) + 
+BreitbartBiologicalNGram %>% 
+  filter(PMI >= 50) %>% 
+  ggplot(aes(x=reorder(n.gram,PMI), y=PMI)) + 
   geom_bar(stat = "identity") + 
   coord_flip() + 
   labs(x="Collocation", y="# of occurrences", title="\"Biological + [collocate]\" Counts in Breitbart Articles")
 ```
+
+## Pink News
+
+```{r}
+PNBiologicalNGram <- read.csv("PNBiologicalBigramRaw.csv")
+```
+
+```{r}
+summary(PNBiologicalNGram)
+```
+
+```{r}
+PNBiologicalNGram$n.gram <- as.factor(PNBiologicalNGram$n.gram)
+```
+
+
+```{r}
+PNBiologicalNGram %>% 
+  filter(PMI >= 5) %>% 
+  ggplot(aes(x=reorder(n.gram,PMI), y=PMI, label=PMI)) + 
+  geom_bar(stat = "identity") + 
+  geom_text() + 
+  coord_flip() + 
+  labs(x="Collocation", y="# of occurrences", title="\"Biological + [collocate]\" Counts in Breitbart Articles")
+```
+
+#Meta Data
+
+##Breitbart
+
+```{r}
+Meta <- read.csv("textList.csv")
+```
+
+
+```{r}
+Meta <- Meta %>% 
+  unique()
+```
+
+```{r}
+Meta$dateTime<-as.Date(Meta$dateTime)
+```
+
+```{r}
+Meta %>% 
+  group_by(month = lubridate::floor_date(dateTime, 'month')) %>% 
+  summarise(count = n()) %>% 
+  ggplot(aes(x=month, y=count)) + 
+  geom_point(stat = "identity") + 
+  geom_hline(yintercept = 19.35, color="pink")  + 
+  geom_smooth() + 
+  labs(x="Time",y="Number of Articles Posted", title = "Articles tagged \'transgender\' on Breitbart")
+```
+
+```{r}
+Meta %>% 
+  group_by(month = lubridate::floor_date(dateTime, 'month')) %>% 
+  summarise(count = n()) %>% 
+  summary()
+```
+
+
+
+###PN 
+
+```{r}
+PNMeta <- read.csv("PNtextList.csv") %>% 
+  unique
+```
+
+```{r}
+PNMeta <- PNMeta %>% 
+  mutate(dateTime = lubridate::mdy(dateTime))
+
+PNMeta$dateTime<-as.Date(PNMeta$dateTime)
+```
+
+```{r}
+PNMeta %>% 
+  group_by(month = lubridate::floor_date(dateTime, 'month')) %>% 
+  summarise(count = n()) %>% 
+  ggplot(aes(x=month, y=count)) + 
+  geom_point(stat = "identity") + 
+  geom_hline(yintercept = 11.75, color="pink")  + 
+  geom_smooth() + 
+  labs(x="Time",y="Number of Articles Posted", title = "Articles tagged \'transgender\' on Pink News")
+```
+
+```{r}
+PNMeta %>% 
+  group_by(month = lubridate::floor_date(dateTime, 'month')) %>% 
+  summarise(count = n()) %>% 
+  summary()
+```
+
 
 
 

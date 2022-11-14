@@ -1,0 +1,60 @@
+from bs4 import BeautifulSoup
+import requests
+import pandas as pd
+import time
+import csv
+import os
+import string
+
+
+def isvalid(url):
+	return requests.head(url).status_code < 400
+
+headers = ["title","dateTime"]
+
+with open("PNtextList.csv","w",newline="") as csvFile:
+    w = csv.writer(csvFile)
+    w.writerow(headers)
+
+    with open('PNurls.csv', newline='') as f:
+        data = csv.reader(f)
+        print(data)
+
+        for url in data:
+                page = requests.get(url[0])
+                soup = BeautifulSoup(page.content, "html.parser")
+                results = soup.find(class_="pn-single-post-wrapper__content-main")
+                headerResult = soup.find(class_="pn-single-post-wrapper__heading")
+                adResults = soup.find(class_="pn-pagicle-widget__pagicles")
+                if adResults != None:
+                    adResults.clear()
+                headers = headerResult.find_all("h1")
+                # subheading = results.find_all("p", class_="subheading")
+                text = results.find_all("p", class_="")
+                output = []
+                output.append(headerResult.text)
+                # for subheader in subheading:
+                #     output.append(subheader)
+                for paragraph in text:
+                    output.append(paragraph.text)
+
+                date = soup.find(class_="pn-single-post-wrapper__date")
+                dateTime = date.text.strip()
+
+                # header = header.text
+                # print(headerResult.text)
+
+                print(output)
+
+                with open("{}.txt".format(headerResult.text).replace("/",""),"w") as newFile:
+                    for paragraph in output:
+                        newFile.write(paragraph)
+                        newFile.write('\n'*2)
+
+                print(headerResult.text.strip() + dateTime)
+
+                # csvFile.write(header.text + "," + dateTime + '\n')
+                w.writerow([headerResult.text.strip(),dateTime.replace(",","")])
+                print(adResults)
+                time.sleep(3)
+                
