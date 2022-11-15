@@ -19,7 +19,7 @@ ignoreList = ["'",".",",","”","’","''","“","‘","’","―"]
 
 filesText = []
 
-directory = "PNtext/"
+directory = "BreitbartText/"
 for filename in os.listdir(directory):
     with open(os.path.join(directory, filename),encoding="utf-8") as myfile:
         content = myfile.read().lower()
@@ -45,7 +45,6 @@ biological_filter = lambda *w: 'biological' not in w
 gender_filter = lambda *w: 'gender' not in w
 claims_filter = lambda *w: 'claims' not in w
 identifies_filter = lambda *w: 'identifies' not in w
-assigned_filter = lambda *w: 'assigned' not in w
 
 
 headers = ["n-gram","PMI"]
@@ -58,7 +57,7 @@ finder.apply_ngram_filter(transgender_filter)
 
 headers = ["n-gram","PMI"]
 
-with open("PNtransgenderBigramPMI.csv","w", newline="") as PMICsv:
+with open("transgenderBigramPMI.csv","w", newline="") as PMICsv:
     w = csv.writer(PMICsv)
     w.writerow(headers)
     for i in finder.score_ngrams(bigram_measures.pmi):
@@ -75,7 +74,7 @@ finder.apply_ngram_filter(biological_filter)
 
 headers = ["n-gram","PMI"]
 
-with open("PNbiologicalBigramPMI.csv","w", newline="") as PMICsv:
+with open("biologicalBigramPMI.csv","w", newline="") as PMICsv:
     w = csv.writer(PMICsv)
     w.writerow(headers)
     for i in finder.score_ngrams(bigram_measures.pmi):
@@ -92,7 +91,7 @@ finder.apply_ngram_filter(gender_filter)
 
 headers = ["n-gram","PMI"]
 
-with open("PNgenderBigramPMI.csv","w", newline="") as PMICsv:
+with open("genderBigramPMI.csv","w", newline="") as PMICsv:
     w = csv.writer(PMICsv)
     w.writerow(headers)
     for i in finder.score_ngrams(bigram_measures.pmi):
@@ -149,53 +148,32 @@ with open("PNgenderBigramPMI.csv","w", newline="") as PMICsv:
 #             i[1] = 0
 #         w.writerow(i)
 
-# Assigned quadram PMI
+# finder = QuadgramCollocationFinder.from_words(word_tokenize(finalList))
 
-finder = QuadgramCollocationFinder.from_words(word_tokenize(finalList))
+# finder.apply_freq_filter(5)
+# finder.apply_ngram_filter(identifies_filter)
 
-finder.apply_freq_filter(5)
-finder.apply_ngram_filter(assigned_filter)
-
-with open("PNassignedQuadgramPMI.csv","w", newline="") as PMICsv:
-    w = csv.writer(PMICsv)
-    w.writerow(headers)
-    for i in finder.score_ngrams(trigram_measures.pmi):
-        i = list(i)
-        i[0] = " ".join(i[0])
-        if i[1] < 0:
-            i[1] = 0
-        w.writerow(i)
-
-# Assigned n-gram raw counts
-
-finder = QuadgramCollocationFinder.from_words(word_tokenize(finalList))
-# finder.apply_freq_filter(10)
-finder.apply_ngram_filter(assigned_filter)
-
-# print(list(finder.ngram_fd.items()))
-
-
-with open("PNassignedQuadgramRaw.csv","w", newline="") as RawCsv:
-    w = csv.writer(RawCsv)
-    w.writerow(headers)
-    for i in list(finder.ngram_fd.items()):
-        i = list(i)
-        i[0] = " ".join(i[0])
-        if i[1] < 0:
-            i[1] = 0
-        w.writerow(i)
+# with open("identifiesQuadgramPMI.csv","w", newline="") as PMICsv:
+#     w = csv.writer(PMICsv)
+#     w.writerow(headers)
+#     for i in finder.score_ngrams(trigram_measures.pmi):
+#         i = list(i)
+#         i[0] = " ".join(i[0])
+#         if i[1] < 0:
+#             i[1] = 0
+#         w.writerow(i)
 
 
 # Biological n-gram raw counts
 
 finder = BigramCollocationFinder.from_words(word_tokenize(finalList))
-# finder.apply_freq_filter(10)
+finder.apply_freq_filter(10)
 finder.apply_ngram_filter(biological_filter)
 
 print(list(finder.ngram_fd.items()))
 
 
-with open("PNbiologicalBigramRaw.csv","w", newline="") as RawCsv:
+with open("biologicalBigramRaw.csv","w", newline="") as RawCsv:
     w = csv.writer(RawCsv)
     w.writerow(headers)
     for i in list(finder.ngram_fd.items()):
@@ -214,7 +192,7 @@ finder.apply_ngram_filter(transgender_filter)
 print(list(finder.ngram_fd.items()))
 
 
-with open("PNtransgenderBigramRaw.csv","w", newline="") as RawCsv:
+with open("transgenderBigramRaw.csv","w", newline="") as RawCsv:
     w = csv.writer(RawCsv)
     w.writerow(headers)
     for i in list(finder.ngram_fd.items()):
